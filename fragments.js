@@ -1,6 +1,6 @@
 function parsergen(syntab)
   var p;
-  p.syn = {};
+  p.syn = {};  //added comment
   p.str = '';
   p.pos = 0;
  
