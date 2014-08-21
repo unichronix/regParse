@@ -1,3 +1,13 @@
+var rnf = {
+            "syn"      : [['def','syn'],['def']],
+            "def"      : [['syncat','=','altlist']],
+            "altlist"  : [['alt','|','altlist'],['alt']],
+            "alt"      : [['termlist']],
+            "termlist" : [['termlist','term'],['term']],
+            "term"     : [['syncat'],['lit']],  
+            "syncat"   : [['<','\w+','>'],['"','.+','"']]
+          }
+
 function parsergen(syntab)
   var p;
   p.syn = {};  //added comment
@@ -102,7 +112,7 @@ function execute_child(xmlNode, htmlSpots, code) {
       htmlSpots[tag].parentNode.replaceChild(htmlTree,htmlSpotNode);
       code[tag](xmlNode,htmlTree);
     }
-    execute_children(xmlNode, weave.htmlSpots, code);
+    execute_children(xmlNode, weave , code);
   }
 }
 
@@ -117,7 +127,7 @@ function seam(xmlNode,fragNode,weave){
         var prm = chi[i].dataset;
 
         if (prm.type = 'spot') {
-          weave[prm.hook] = chi[i];
+          weave.htmlSpots[prm.hook] = chi[i];
         } else if (prm.type = 'aa') {
           fragNode.setAttribute(prm.ato,xmlNode.querySelector(prm.query).getAttribute(prm.afrom));
           fragNode.removeChild();
@@ -126,13 +136,12 @@ function seam(xmlNode,fragNode,weave){
         } else if (prm.type = 'ta') {
           fragNode.setAttribute(prm.ato,xmlNode.querySelector(prm.query).childNode.nodeValue());
           fragNode.removeChild();
-        } else if (prm.type = 'tt') {
+        } else if (prm.type = 'tt') { 
           fragNode.replaceChild(document.createTextNode(xmlNode.querySelector(prm.query).childNode.nodeValue()),chi[i]);
         }
       }
     }
   } 
-
 
   return(weave);
 }
@@ -140,7 +149,7 @@ function seam(xmlNode,fragNode,weave){
 function execute_children(xmlNode, htmlSpots, code) {
   var xmlChildNode = xmlNode.firstChild;
   while (xmlChildNode !== undefined) {
-    execute_child(xmlNode, htmlSpots, code);
+    execute_child(xmlChildNode, htmlSpots, code);
   }
 
   cleanUp(htmlSpots);
