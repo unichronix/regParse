@@ -1,8 +1,7 @@
 var rnf = {
-            "syn"      : [['def','syn'],['def']],
+            "syn"      : [['def',';','syn'],['def']],
             "def"      : [['syncat','=','altlist']],
-            "altlist"  : [['alt','|','altlist'],['alt']],
-            "alt"      : [['termlist']],
+            "altlist"  : [['termlist','|','altlist'],['termlist']],
             "termlist" : [['termlist','term'],['term']],
             "term"     : [['syncat'],['lit']],  
             "syncat"   : [['<','\w+','>'],['"','.+','"']]
