@@ -10,49 +10,50 @@ var rnf = {
 
 function parsergen(syntab)
   var p;
-  p.syn = {};  //added comment
+  p.syn = {};  
   p.str = '';
   p.pos = 0;
  
   for (var category in syntab){
     if (syntab.hasOwnProperty(category)) {
                                   
-       p.syn[category] =
-         (function (cat){
-            return
-              function () {
-              var progress = 0,
-                  alt   = 0,
-                  stack = [],
-                  def   = p.syntab[category],
-                  alts  = def.length,
-                  completed = def[0].length;
-              return
-                {"check" : function () {
-                    if (progress===0) stack[progress] = def[alt][progress](); 
-                    while (true) {
-                      if (stack[progress].check()) {
-                        if (progress === completed) {
-                          return(true);
-                        } else {
-                          stack[++progress] = def[alt][progress]();
-                        }
-                      } else {
-                        if (progress === 0) {
-                          if (++alt<alts) {
-                             completed = def[alt].length
-                          } else {
-                            return(false);
-                          }
-                        } else {
-                          progress--;
-                        }
-                      }
+      p.syn[category] =
+      (function (cat){
+        return
+        function () {
+          var progress = 0,
+              alt   = 0,
+              def   = syntab[cat],
+              stack = [def[alt][0]()],
+              alts  = def.length,
+              completed = def[0].length;
+          return {
+            "check" : 
+            function () {
+              while (true) {
+                if (stack[progress].check()) {
+                  if (progress === completed) {
+                    return(true);
+                  } else {
+                    stack[++progress] = def[alt][progress]();
+                  }
+                } else {
+                  if (progress === 0) {
+                    if (++alt<alts) {
+                       completed = def[alt].length;
+                       stack[0]  = def[alt][0]();
+                    } else {
+                      return(false);
                     }
+                  } else {
+                     progress--;
                   }
                 }
               }
-          })(category);
+            }
+          }
+        }
+      })(category);
     }
   }
 
@@ -64,11 +65,12 @@ function parsergen(syntab)
         for (var progress=0;progress<completed;progress++) {
           var txt = syntab[category][alt][progress];
           if (exists(syn.hasOwnProperty(txt))) {
-            syntab[category][alt][progress] = syn[txt];
+            syntab[category][alt][progress] = p.syn[txt];
           }
           else
           {
-            syntab[category][alt][progress]=
+            syntab[category][alt][progress]={
+            "check" :
               function () {
                 var fresh = true
                     pat = new RegExp('\s*?'.txt),
@@ -90,6 +92,7 @@ function parsergen(syntab)
                    return(fresh);                                                              
                 }
               }
+            }
           }
         }
       }
