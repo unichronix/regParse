@@ -4,7 +4,8 @@ var rnf = {
             "altlist"  : [['termlist','|','altlist'],['termlist']],
             "termlist" : [['termlist','term'],['term']],
             "term"     : [['syncat'],['lit']],  
-            "syncat"   : [['<','\w+','>'],['"','.+','"']]
+            "syncat"   : [['<','\w+','>']],
+            "lit"      : [['"','.+','"']]
           }
 
 function parsergen(syntab)
@@ -27,24 +28,25 @@ function parsergen(syntab)
                   alts  = def.length,
                   completed = def[0].length;
               return
-                function () {
-                  if (progress===0) stack[progress] = def[alt][progress](); 
-                  while (true) {
-                    if (stack[progress]()) {
-                      if (progress === completed) {
-                        return(true);
-                      } else {
-                        stack[++progress] = def[alt][progress]();
-                      }
-                    } else {
-                      if (progress === 0) {
-                        if (++alt<alts) {
-                           completed = def[alt].length
+                {"check" : function () {
+                    if (progress===0) stack[progress] = def[alt][progress](); 
+                    while (true) {
+                      if (stack[progress].check()) {
+                        if (progress === completed) {
+                          return(true);
                         } else {
-                          return(false);
+                          stack[++progress] = def[alt][progress]();
                         }
                       } else {
-                        progress--;
+                        if (progress === 0) {
+                          if (++alt<alts) {
+                             completed = def[alt].length
+                          } else {
+                            return(false);
+                          }
+                        } else {
+                          progress--;
+                        }
                       }
                     }
                   }
