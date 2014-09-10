@@ -50,6 +50,11 @@ function parsergen(syntab)
                   }
                 }
               }
+            },
+          "report" :
+            function () { 
+
+
             }
           }
         }
@@ -91,6 +96,11 @@ function parsergen(syntab)
                    p.pos -= n;
                    return(fresh);                                                              
                 }
+              },
+            "report" :
+              function () { 
+
+
               }
             }
           }
